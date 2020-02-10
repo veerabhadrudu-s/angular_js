@@ -1,0 +1,50 @@
+<html ng-app="TwoControllerApp">
+<head>
+<style type="text/css">
+.divOne {
+	width: 100px;
+	height: 100px;
+	background-color: orange;
+}
+
+.divTwo {
+	width: 100px;
+	height: 100px;
+	background-color: silver;
+}
+</style>
+
+<script type="text/javascript" src="angular.js"></script>
+<script type="text/javascript">
+	var app = angular.module("TwoControllerApp", []);
+
+	app.controller("ControllerOne", function($scope) {
+		console.log(this);
+		console.log($scope);
+		$scope.onClickDiv = function() {
+			console.log("ControllerOne");
+			console.log(this);
+		}
+	});
+
+	app.controller("ControllerTwo", function($scope) {
+		console.log(this);
+		console.log($scope);
+		let scopeCapture = this;
+		scopeCapture.onClickDiv = function() {
+			console.log("ControllerTwo");
+			console.log(this);
+		}
+	});
+</script>
+</head>
+<body>
+
+	<div ng-controller="ControllerOne" ng-init="contollerOneValue='1'"
+		class="divOne" ng-click="onClickDiv()">{{contollerOneValue}}</div>
+	<br />
+	<br />
+	<div ng-controller="ControllerTwo as cont2" ng-init="contollerTwoValue='2'"
+		class="divTwo" ng-click="cont2.onClickDiv()">{{contollerTwoValue}}</div>
+</body>
+</html>

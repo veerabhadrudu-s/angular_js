@@ -1,0 +1,49 @@
+<html ng-app="appmod">
+<head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script type="text/javascript" src="js/angular.js"></script>
+<script type="text/javascript">
+	let appmod = angular.module("appmod", []);
+	appmod.controller("UsersController", [ "$scope", function($scope) {
+				
+			} ])
+			.directive(
+					"showUsers",
+					function() {
+						return {
+							restrict : "E",
+							transclude:true,
+							scope : {								
+							},
+							template : "This is showusers directive <ng-transclude />",
+							controller : [ "$scope",function($scope){
+								this.value=100;
+								console.log($scope);
+								console.log("showusers directive controller");
+							}],
+							controllerAs:"$showUsersCtl"
+						};
+					})
+			.directive(
+					"addUser",
+					function() {
+						return {
+							restrict : "E",
+							require : "^^showUsers",
+							scope : {},
+							template : "This is addusers directive",
+							link : function(scope, element, attrs, controller,
+									transcludeFn) {
+									console.log(controller);
+									console.log(transcludeFn);
+							}
+
+						};
+					});
+</script>
+</head>
+<body ng-controller="UsersController">
+	<show-users ></br><add-user></add-user></show-users>
+	
+</body>
+</html>

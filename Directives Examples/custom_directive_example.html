@@ -1,0 +1,119 @@
+<html ng-app="appmod">
+<head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script type="text/javascript" src="js/angular.js"></script>
+<script type="text/javascript">
+	let appmod = angular.module("appmod", []);
+	appmod
+			.controller("UsersController", [ "$scope", function($scope) {
+				let users = [ {
+					name : "Veera",
+					age : 31,
+					location : "Bangalore"
+				}, {
+					name : "Bob",
+					age : 32,
+					location : "New York"
+				}, {
+					name : "Stefan",
+					age : 33,
+					location : "Frankfort"
+				} ];
+				$scope.users = users;
+				$scope.$on("AddUser", function(event, newUser) {
+					console.log(newUser)
+					users.push(newUser);
+				});
+			} ])
+			.directive(
+					"showUsers",
+					function() {
+						return {
+							restrict : "E",
+							scope : {
+								users : "="
+							},
+							templateUrl : "showUsers.html",
+							link : function(scope, element, attrs, controller,
+									transcludeFn) {								
+								scope.removeUser = function(index) {
+									console.log("User index to be removed is "
+											+ index);
+									console.log(scope);
+									if (index > -1)
+										scope.users.splice(index, 1);
+								}
+
+							}
+						};
+					})
+			.directive(
+					"addUser",
+					function() {
+						return {
+							restrict : "E",
+							scope : true,
+							templateUrl : "addUser.html",
+							link : function(scope, element, attrs, controller,
+									transcludeFn) {
+								let userFields=["name","age","location"];
+								scope.user = {};
+								scope.validationError = false;
+								scope.validationErrorMsgs = [];
+								scope.addUser = function(user) {
+									console.log(scope);
+									scope.validationError = false;
+									scope.validationErrorMsgs = [];
+									for ( let property of userFields)
+										validateUserField(user, property);
+									if (scope.validationError)
+										return;
+									console.log("Adding new user ", user);
+									scope.$emit("AddUser", user);
+									scope.user = {};
+								}
+								function validateUserField(user, field) {
+									if (!user[field]) {
+										scope.validationError = true;
+										scope.validationErrorMsgs.push(` ${field} can't be empty `);
+									}
+								}
+
+							}
+
+						};
+					});
+</script>
+<script type="text/ng-template" id="showUsers.html">
+		<h2>All User Details</h2>
+		<div ng-repeat="user in users">
+			<div class="alert alert-info" role="alert"> 
+				<b>User name is <i>{{ user.name }}</i></b></br> 
+				<b>Age is {{ user.age }}</b></br> 
+				<b>Location is {{ user.location }}</b></br> 
+				<button ng-click="removeUser($index)">Remove {{ user.name }}</button>
+				<br/> <br/>
+				
+			</div>
+		</div>
+	</script>
+<script type="text/ng-template" id="addUser.html">
+		<h2>Add User Details</h2>
+		<div class="alert alert-info" role="alert">
+			<div ng-show="validationError" ng-repeat="validationErrorMsg in validationErrorMsgs">
+				<label class="alert alert-danger" role="alert" >{{ validationErrorMsg }}</label>
+			</div><br/> 
+			<b>User name <input placeholder="Enter user name" type="text" ng-model="user.name" /></b><br/> 
+			<b>Age <input placeholder="Enter age" type="number" ng-model="user.age" /></b><br/> 
+			<b>Location <input placeholder="Enter location" type="text" ng-model="user.location" /></b><br/> 
+			<button ng-click="addUser(user)">Add User</button>
+			<br/> <br/>
+				
+		</div>		
+	</script>
+</head>
+<body ng-controller="UsersController">
+	<show-users users="users"></show-users>
+	<add-user></add-user>
+</body>
+</html>

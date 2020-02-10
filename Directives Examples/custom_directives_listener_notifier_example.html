@@ -1,0 +1,58 @@
+<html ng-app="appmod">
+<head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script type="text/javascript" src="js/angular.js"></script>
+<script type="text/javascript">
+	let appmod = angular.module("appmod", []);
+	appmod.controller("ScopeController", [ "$scope", function($scope) {
+
+	} ]).directive("myNotifier", function() {
+		return {
+			restrict : "A",
+			//	scope : true, You should not use scope property in order make this example to work.
+			link : function(scope, element, attrs, controller, transcludeFn) {
+
+				element.on("keydown", function(event, otherParam) {
+					var key = event.which;
+					if (key == 13) {
+						//console.log("enter key pressed", event.target.value);
+						//console.log(attrs['myNotifier']);
+						scope.$apply(function(scope) {
+							scope[attrs['myNotifier']] = event.target.value;
+						});
+					}
+				});
+
+			}
+		};
+	}).directive(
+			"myListener",
+			function() {
+				return {
+					restrict : "A",
+					//	scope : true, You should not use scope property in order make this example to work.
+					link : function(scope, element, attrs, controller,
+							transcludeFn) {
+						//console.log(attrs['myListener']);
+						scope.$watch(attrs['myListener'], function(newVal,
+								oldVal, scope) {
+							console.log("Old Value", oldVal);
+							console.log("New Value", newVal);
+							element.text(newVal);
+						});
+					}
+
+				};
+			});
+</script>
+</head>
+<body ng-controller="ScopeController">
+
+	Enter the value to be listened ->
+	<input type="text" placeholder="Press enter after value "
+		my-notifier="textBoxVal" />
+	<br />You have entered the value ->
+	<span my-listener="textBoxVal"></span>
+
+</body>
+</html>
